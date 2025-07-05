@@ -2,6 +2,8 @@ package com.example.makecalculater;
 
 import static java.lang.Double.parseDouble;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     double firstNum = 0, secondNum = 0;
     TextView tv;
+    TextView resultTv;
     String operater = "";
     Boolean isFirst = true;
 
@@ -34,9 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        //沉浸式全屏模式的关键实现
 
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
+        resultTv = findViewById(R.id.resultTv);
         Button bt0 = findViewById(R.id.bt0);
         bt0.setOnClickListener(this);
         Button bt1 = findViewById(R.id.bt1);
@@ -69,11 +74,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btdiv.setOnClickListener(this);
         Button btc = findViewById(R.id.btc);
         btc.setOnClickListener(this);
-        Button btrem = findViewById(R.id.btrem);
-        btrem.setOnClickListener(this);
         Button btdel = findViewById(R.id.btdel);
         btdel.setOnClickListener(this);
         Button btequ = findViewById(R.id.btequ);
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#D2691E"));
+        gradientDrawable.setCornerRadius(15);
+        btequ.setBackground(gradientDrawable);
         btequ.setOnClickListener(this);
     }
 
@@ -116,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
     public void handleNumber(String s) {
+        if(!resultTv.getText().toString().equals("")) {
+            resultTv.setText("0");
+        }
         if(isFirst && s.equals("0") && "".equals(tv.getText().toString())) {
             return;
         }
@@ -123,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setText("");
         }
             tv.append(s);
-
     }
     public void handleDel() {
         if(isFirst && !tv.getText().toString().equals("")) {
@@ -133,6 +142,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void handleOperator(String s) {
         if(isFirst && "0".equals(tv.getText().toString())) {
             tv.setText("");
+        }
+        if(resultTv.getText().length() > 0) {
+            if(Math.abs(firstNum - Math.round(firstNum)) < 1e-9) {
+                tv.setText(String.valueOf((int)firstNum));
+            } else {
+                tv.setText(String.valueOf(firstNum));
+            }
+            resultTv.setText("");
         }
         if(isFirst) {
             if(!"".equals(tv.getText().toString())) {
@@ -175,9 +192,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 firstNum = firstNum % secondNum;
         }
         if(Math.abs(firstNum - Math.round(firstNum)) < 1e-9) {
-            tv.setText(String.valueOf((int)firstNum));
+            firstNum = (int)firstNum;
+            resultTv.setText(String.valueOf((int)firstNum));
         } else {
-            tv.setText(String.valueOf((int)firstNum));
+            resultTv.setText(String.valueOf(firstNum));
         }
         isFirst = true;
         secondNum = 0;
@@ -190,7 +208,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             firstNum = 0;
             return;
         }
-        String sub = s.substring(1);
+
+        String sub = s.substring(1,s.length());
         if(sub.contains("+") || sub.contains("-") || sub.contains("×") || sub.contains("÷')")) {
             String[] twoNum = sub.split("[+\\-×÷]");
             if(twoNum.length == 1) {
@@ -200,14 +219,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tv.setText(s.substring(0,s.length() - 1));
                 isFirst = false;
             }
+            if(s.charAt(0) == '-') {
+                twoNum[0] = "-" + twoNum[0];
+                firstNum = parseDouble(twoNum[0]);
+            } else {
+                firstNum = parseDouble(s.charAt(0) + twoNum[0]);
+            }
+
         } else {
             tv.setText(s.substring(0,s.length() - 1));
+            firstNum = parseDouble(s.substring(0, s.length() - 1));
         }
-
+        resultTv.setText("");
 
     }
     public void clearAll() {
         tv.setText("0");//这里一定要加“”，不然编译器以为这是id，即R.string.0
+        resultTv.setText("");
         firstNum = 0;
         secondNum = 0;
     }
