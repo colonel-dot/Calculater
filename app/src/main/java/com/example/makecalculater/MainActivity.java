@@ -15,16 +15,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-
+    int pos = -1;
     double firstNum = 0, secondNum = 0;
     TextView tv;
     TextView resultTv;
     String operater = "";
     Boolean isFirst = true;
+    Deque<Integer> numStack = new LinkedList<>();
+    Deque<Character> operatorStack = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button btdel = findViewById(R.id.btdel);
         btdel.setOnClickListener(this);
         Button btequ = findViewById(R.id.btequ);
+        Button btLeft = findViewById((R.id.btleft));
+        btLeft.setOnClickListener(this);
+        Button btRight = findViewById(R.id.btright);
+        btRight.setOnClickListener(this);
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#D2691E"));
         gradientDrawable.setCornerRadius(15);
@@ -110,6 +118,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case "%":
                 handleOperator(ButtonText);
                 break;
+            case "(":
+                handleLeft(ButtonText);
+                break;
+            case ")":
+                handleRight(ButtonText);
+                break;
             case "=":
                 calculateResult();
                 break;
@@ -122,6 +136,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
+    private void handleLeft(String s) {
+        operatorStack.push('(');
+    }
+
+    private void handleRight(String s) {
+        operatorStack.push(')');
+    }
+
     public void handleNumber(String s) {
         if(!resultTv.getText().toString().equals("")) {
             resultTv.setText("0");
@@ -140,10 +163,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     public void handleOperator(String s) {
-        if(isFirst && "0".equals(tv.getText().toString())) {
+        String tvString = tv.getText().toString();
+        if(isFirst && ("0".equals(tvString) || "".equals(tvString))) {
             tv.setText("");
         }
-        if(resultTv.getText().length() > 0) {
+        if(tvString.length() > 0) {
             if(Math.abs(firstNum - Math.round(firstNum)) < 1e-9) {
                 tv.setText(String.valueOf((int)firstNum));
             } else {
@@ -151,18 +175,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             resultTv.setText("");
         }
-        if(isFirst) {
-            if(!"".equals(tv.getText().toString())) {
-                firstNum = parseDouble(tv.getText().toString());
-                tv.append(s);
-                operater = s;
-                isFirst = false;
-            } else {
-                if("-".equals(s)) {
-                    tv.append((s));
+        if(tvString.matches("[+\\-×÷]$")) {//排除前面有运算符还继续输入运算符的情况
+            if(s.equals("-")) {
+                if(tvString.charAt(tvString.length() - 1) != '-') {
+                    tv.append(s);
+                } else {
+                    return;
                 }
+            } else {
+                return;
             }
         }
+
     }
     public void calculateResult() {
         if(isFirst) {

@@ -26,7 +26,7 @@
         android:layout_rowWeight="1.5"
         android:layout_height="0dp"
         android:layout_columnSpan="4"
-        android:textSize="50sp"
+        android:textSize="80sp"
         android:layout_gravity="right"
         />
 
