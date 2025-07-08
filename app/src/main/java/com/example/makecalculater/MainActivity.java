@@ -206,9 +206,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else if(ch == ')') {
                 while(!infixStack.isEmpty() && infixStack.peek() != '(') {
                     char c = infixStack.pop();
-                    postfixSb.append(c);
+                    postfixSb.append(c).append(" ");
                 }
-                postfixSb.append(infixStack.pop());
+                if(infixStack.peek() != '(') {
+                    postfixSb.append(infixStack.peek());
+                }
+                infixStack.pop();
             }
             else if(isOperator(ch)){
                 while (!infixStack.isEmpty() && getPriority(infixStack.peek()) >= getPriority(ch)) {
@@ -262,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public boolean isOperator(char ch) {
-        if(ch == '×' || ch == '÷' || ch == '+' | ch == '-') {
+        if(ch == '×' || ch == '÷' || ch == '+' || ch == '-') {
             return true;
         } else {
             return false;
@@ -270,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public int getPriority(char ch) {
-        if(ch == '+' | ch == '-') {
+        if(ch == '+' || ch == '-') {
             return 1;
         }
         else if(ch == '×' || ch == '÷') {

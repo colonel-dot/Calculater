@@ -222,7 +222,7 @@
         android:layout_columnWeight="1"
         android:layout_height="0dp"
         android:layout_rowWeight="1"
-        android:background="@color/light_gray"
+        android:background="@drawable/my_shape"
         android:layout_margin="6dp"
         />
     <Button
