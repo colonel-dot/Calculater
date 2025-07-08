@@ -21,14 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    int pos = -1;
-    double firstNum = 0, secondNum = 0;
+    StringBuilder infixSb = new StringBuilder();
     TextView tv;
     TextView resultTv;
     String operater = "";
     Boolean isFirst = true;
-    Deque<Integer> numStack = new LinkedList<>();
-    Deque<Character> operatorStack = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,129 +135,144 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleLeft(String s) {
-        operatorStack.push('(');
+        tv.append(s);
+        infixSb.append(s);
     }
 
     private void handleRight(String s) {
-        operatorStack.push(')');
+        tv.append(s);
+        infixSb.append(s);
     }
 
     public void handleNumber(String s) {
-        if(!resultTv.getText().toString().equals("")) {
-            resultTv.setText("0");
-        }
-        if(isFirst && s.equals("0") && "".equals(tv.getText().toString())) {
-            return;
-        }
-        if(isFirst && "0".equals(tv.getText().toString())) {
-            tv.setText("");
-        }
-            tv.append(s);
+        tv.append(s);
+        infixSb.append(s);
     }
+
+
     public void handleDel() {
         if(isFirst && !tv.getText().toString().equals("")) {
             tv.append(".");
+            infixSb.append(".");
         }
     }
+
+
     public void handleOperator(String s) {
+        char ch = s.charAt(0);
         String tvString = tv.getText().toString();
-        if(isFirst && ("0".equals(tvString) || "".equals(tvString))) {
-            tv.setText("");
-        }
-        if(tvString.length() > 0) {
-            if(Math.abs(firstNum - Math.round(firstNum)) < 1e-9) {
-                tv.setText(String.valueOf((int)firstNum));
-            } else {
-                tv.setText(String.valueOf(firstNum));
-            }
-            resultTv.setText("");
-        }
-        if(tvString.matches("[+\\-×÷]$")) {//排除前面有运算符还继续输入运算符的情况
-            if(s.equals("-")) {
-                if(tvString.charAt(tvString.length() - 1) != '-') {
-                    tv.append(s);
-                } else {
-                    return;
-                }
-            } else {
+        int len = tvString.length();
+        if(ch != '-') {
+            if(len == 0 || isOperator(tvString.charAt(len - 1))) {
                 return;
             }
         }
-
-    }
-    public void calculateResult() {
-        if(isFirst) {
+        if(ch == '-' && tvString.charAt(len - 1) == '-') {
             return;
         }
-        String s = tv.getText().toString().substring(1);
-        String regex = "[+\\-×÷%][-+]?\\d*\\.?\\d+(?:[eE][-+]?\\d+)?";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(s);
-        matcher.find();
-        String sub = matcher.group();
-        secondNum = parseDouble(sub.substring(1));
-        switch (operater) {
-            case "+" :
-                firstNum = firstNum + secondNum;
-                break;
-            case "-" :
-                firstNum = firstNum - secondNum;
-                break;
-            case "×" :
-                firstNum = firstNum * secondNum;
-                break;
-            case "÷" :
-                firstNum = firstNum / secondNum;
-                break;
-            default:
-                firstNum = firstNum % secondNum;
+        tv.append(s);
+        infixSb.append(s);
+    }
+    public void calculateResult() {
+        Deque<Character> infixStack = new LinkedList<>();
+        String infix = infixSb.toString();
+        StringBuilder postfixSb = new StringBuilder();
+        int len = infix.length();
+        for(int i = 0; i < len; ++i) {
+            char ch = infix.charAt(i);
+            if(Character.isDigit(ch) || ch == '.') {
+                while (i < infix.length() && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')) {
+                    postfixSb.append(infix.charAt(i++));
+                }
+                postfixSb.append(" ");
+                --i;
+            }
+            else if(ch == '(') {
+                infixStack.push('(');
+            }
+            else if(ch == ')') {
+                while(!infixStack.isEmpty() && infixStack.peek() != '(') {
+                    char c = infixStack.pop();
+                    postfixSb.append(c);
+                }
+                postfixSb.append(infixStack.pop());
+            }
+            else if(isOperator(ch)){
+                while (!infixStack.isEmpty() && getPriority(infixStack.peek()) >= getPriority(ch)) {
+                    postfixSb.append(infixStack.pop()).append(" ");
+                }
+                infixStack.push(ch);
+            }
         }
-        if(Math.abs(firstNum - Math.round(firstNum)) < 1e-9) {
-            firstNum = (int)firstNum;
-            resultTv.setText(String.valueOf((int)firstNum));
+        while(!infixStack.isEmpty()) {
+            postfixSb.append(infixStack.pop()).append(" ");
+        }
+        Deque<Double> calculateStack = new LinkedList<>();
+        String[] tokens = postfixSb.toString().split("\\s+");
+        for(String token : tokens) {
+            if (token.matches("-?\\d+(\\.\\d+)?")) { // 数字
+                calculateStack.push(Double.parseDouble(token));
+            } else if (isOperator(token.charAt(0))) {
+                double b = calculateStack.pop();
+                double a = calculateStack.pop();
+                calculateStack.push(calculate(a, b, token.charAt(0)));
+            }
+        }
+        double temp = calculateStack.peek();
+        if(Math.abs(temp - Math.round(temp)) < 1e-9) {
+            resultTv.setText(String.valueOf((int)temp));
+        }
+        else {
+            resultTv.setText(String.valueOf(temp));
+        }
+    }
+
+    private static double calculate(double a, double b, char op) {
+        if(op == '+') {
+            return a + b;
+        } else if (op == '-') {
+            return a - b;
+        } else if (op == '×') {
+            return a * b;
         } else {
-            resultTv.setText(String.valueOf(firstNum));
+            return a / b;
         }
-        isFirst = true;
-        secondNum = 0;
+    }
+
+    public boolean isOperator(char ch) {
+        if(ch == '×' || ch == '÷' || ch == '+' | ch == '-') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int getPriority(char ch) {
+        if(ch == '+' | ch == '-') {
+            return 1;
+        }
+        else if(ch == '×' || ch == '÷') {
+            return 2;
+        } else {
+            return 0;
+        }
     }
 
     public void backSpace() {
         String s = tv.getText().toString();
         if("".equals(s) || s.length() == 1) {
-            tv.setText("0");
-            firstNum = 0;
-            return;
+            tv.setText("");
         }
-
-        String sub = s.substring(1,s.length());
-        if(sub.contains("+") || sub.contains("-") || sub.contains("×") || sub.contains("÷')")) {
-            String[] twoNum = sub.split("[+\\-×÷]");
-            if(twoNum.length == 1) {
-                tv.setText(s.substring(0,s.length() - 1));
-                isFirst = true;
-            } else {
-                tv.setText(s.substring(0,s.length() - 1));
-                isFirst = false;
-            }
-            if(s.charAt(0) == '-') {
-                twoNum[0] = "-" + twoNum[0];
-                firstNum = parseDouble(twoNum[0]);
-            } else {
-                firstNum = parseDouble(s.charAt(0) + twoNum[0]);
-            }
-
-        } else {
-            tv.setText(s.substring(0,s.length() - 1));
-            firstNum = parseDouble(s.substring(0, s.length() - 1));
+        else {
+            tv.setText(s.substring(0, s.length() - 1));
+            infixSb.deleteCharAt(s.length() - 1);
+            resultTv.setText("");
         }
-        resultTv.setText("");
-
     }
     public void clearAll() {
-        tv.setText("0");//这里一定要加“”，不然编译器以为这是id，即R.string.0
+        tv.setText("");//这里一定要加“”，不然编译器以为这是id，即R.string.0
         resultTv.setText("");
-        firstNum = 0;
-        secondNum = 0;
+        infixSb = new StringBuilder();
+        infixSb = new StringBuilder();
     }
 }
