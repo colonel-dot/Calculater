@@ -15,6 +15,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView resultTv;
     String operater = "";
     Boolean isFirst = true;
-
+    int leftNumber = 0, rightNumber = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,11 +139,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void handleLeft(String s) {
         tv.append(s);
         infixSb.append(s);
+        ++leftNumber;
     }
 
     private void handleRight(String s) {
+        if(leftNumber < rightNumber + 1) {
+            return;
+        }
         tv.append(s);
         infixSb.append(s);
+        ++rightNumber;
     }
 
     public void handleNumber(String s) {
@@ -170,10 +177,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(ch == '-' && tvString.charAt(len - 1) == '-') {
             return;
         }
+
         tv.append(s);
         infixSb.append(s);
     }
     public void calculateResult() {
+        if(isOperator(infixSb.charAt(infixSb.length() - 1))) {
+            while(infixSb.length() > 0 && isOperator(infixSb.charAt(infixSb.length() - 1))) {
+                infixSb.deleteCharAt(infixSb.length() - 1);
+            }
+        }
         Deque<Character> infixStack = new LinkedList<>();
         String infix = infixSb.toString();
         StringBuilder postfixSb = new StringBuilder();
@@ -207,35 +220,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         while(!infixStack.isEmpty()) {
             postfixSb.append(infixStack.pop()).append(" ");
         }
-        Deque<Double> calculateStack = new LinkedList<>();
+        Deque<BigDecimal> calculateStack = new LinkedList<>();
         String[] tokens = postfixSb.toString().split("\\s+");
         for(String token : tokens) {
             if (token.matches("-?\\d+(\\.\\d+)?")) { // 数字
-                calculateStack.push(Double.parseDouble(token));
+                calculateStack.push(new BigDecimal(token));
             } else if (isOperator(token.charAt(0))) {
-                double b = calculateStack.pop();
-                double a = calculateStack.pop();
-                calculateStack.push(calculate(a, b, token.charAt(0)));
+                BigDecimal b = calculateStack.pop();
+                BigDecimal a = calculateStack.pop();
+                BigDecimal c = calculate(a, b, token.charAt(0));
+                if(c == null) {
+                    return;
+                }
+                calculateStack.push(c);
             }
         }
-        double temp = calculateStack.peek();
-        if(Math.abs(temp - Math.round(temp)) < 1e-9) {
-            resultTv.setText(String.valueOf((int)temp));
-        }
-        else {
-            resultTv.setText(String.valueOf(temp));
+        BigDecimal temp = calculateStack.peek();
+        if (temp.scale() <= 0 || temp.stripTrailingZeros().scale() <= 0) {
+            // 是整数，显示为整数
+            resultTv.setText(temp.setScale(0, RoundingMode.DOWN).toString());
+        } else {
+            // 是小数，保留3位
+            resultTv.setText(temp.setScale(3, RoundingMode.HALF_UP).toString());
         }
     }
 
-    private static double calculate(double a, double b, char op) {
+    private  BigDecimal calculate(BigDecimal a, BigDecimal b, char op) {
         if(op == '+') {
-            return a + b;
+            return a.add(b);
         } else if (op == '-') {
-            return a - b;
+            return a.subtract(b);
         } else if (op == '×') {
-            return a * b;
+            return a.multiply(b);
         } else {
-            return a / b;
+            if((b.compareTo(BigDecimal.ZERO) == 0)) {
+                resultTv.setText("错误");
+                return null;
+            }
+            return a.divide(b,3, RoundingMode.DOWN);
         }
     }
 
@@ -262,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String s = tv.getText().toString();
         if("".equals(s) || s.length() == 1) {
             tv.setText("");
+            infixSb = new StringBuilder();
         }
         else {
             tv.setText(s.substring(0, s.length() - 1));
@@ -272,7 +295,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void clearAll() {
         tv.setText("");//这里一定要加“”，不然编译器以为这是id，即R.string.0
         resultTv.setText("");
-        infixSb = new StringBuilder();
         infixSb = new StringBuilder();
     }
 }
