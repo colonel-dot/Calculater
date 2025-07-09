@@ -169,12 +169,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         char ch = s.charAt(0);
         String tvString = tv.getText().toString();
         int len = tvString.length();
+        if (ch == '-' && (len == 0 || isOperator(tvString.charAt(len - 1)) || tvString.charAt(len - 1) == '(')) {
+            tv.append(s);
+            infixSb.append(s);
+            return;
+        }
         if(ch != '-') {
             if(len == 0 || isOperator(tvString.charAt(len - 1))) {
                 return;
             }
         }
-        if(ch == '-' && tvString.charAt(len - 1) == '-') {
+        if(ch == '-' && len > 0 && tvString.charAt(len - 1) == '-') {
             return;
         }
 
@@ -182,6 +187,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         infixSb.append(s);
     }
     public void calculateResult() {
+        if(tv.getText().toString().isEmpty()) {
+            return;
+        }
         if(isOperator(infixSb.charAt(infixSb.length() - 1))) {
             while(infixSb.length() > 0 && isOperator(infixSb.charAt(infixSb.length() - 1))) {
                 infixSb.deleteCharAt(infixSb.length() - 1);
@@ -193,7 +201,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int len = infix.length();
         for(int i = 0; i < len; ++i) {
             char ch = infix.charAt(i);
-            if(Character.isDigit(ch) || ch == '.') {
+            if (Character.isDigit(ch) || ch == '.' || (ch == '-' && (i > 0 && (i == 0 || infix.charAt(i - 1) == '(') || isOperator(infix.charAt(i - 1))))) {
+                if (ch == '-') {
+                    postfixSb.append(ch); // 保留负号
+                    i++;
+                }
                 while (i < infix.length() && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')) {
                     postfixSb.append(infix.charAt(i++));
                 }
@@ -287,11 +299,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String s = tv.getText().toString();
         if("".equals(s) || s.length() == 1) {
             tv.setText("");
+            resultTv.setText("");
             infixSb = new StringBuilder();
         }
         else {
             tv.setText(s.substring(0, s.length() - 1));
-            infixSb.deleteCharAt(s.length() - 1);
+            infixSb = new StringBuilder(tv.getText().toString());
             resultTv.setText("");
         }
     }
