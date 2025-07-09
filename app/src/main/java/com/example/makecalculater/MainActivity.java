@@ -137,6 +137,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleLeft(String s) {
+        String tvString = tv.getText().toString();
+        if(tvString.length() > 0 && !isOperator(tvString.charAt(tvString.length() - 1))) {
+            infixSb.append("×");
+            tv.append("×");
+        }
         tv.append(s);
         infixSb.append(s);
         ++leftNumber;
@@ -190,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(tv.getText().toString().isEmpty()) {
             return;
         }
-
+        char lastChar = infixSb.charAt(infixSb.length() - 1);
         if(isOperator(infixSb.charAt(infixSb.length() - 1))) {
             while(infixSb.length() > 0 && isOperator(infixSb.charAt(infixSb.length() - 1))) {
                 infixSb.deleteCharAt(infixSb.length() - 1);
@@ -202,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int len = infix.length();
         for(int i = 0; i < len; ++i) {
             char ch = infix.charAt(i);
-            if (Character.isDigit(ch) || ch == '.' || (ch == '-' && (i > 0 && (i == 0 || infix.charAt(i - 1) == '(') || isOperator(infix.charAt(i - 1))))) {
+            if (Character.isDigit(ch) || ch == '.' || (ch == '-' && (i == 0 || (i > 0 &&(infix.charAt(i - 1) == '(') || isOperator(infix.charAt(i - 1)))))) {
                 if (ch == '-') {
                     postfixSb.append(ch); // 保留负号
                     i++;
@@ -221,10 +226,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     char c = infixStack.pop();
                     postfixSb.append(c).append(" ");
                 }
-                if(infixStack.peek() != '(') {
-                    postfixSb.append(infixStack.peek());
-                }
                 infixStack.pop();
+
             }
             else if(isOperator(ch)){
                 while (!infixStack.isEmpty() && getPriority(infixStack.peek()) >= getPriority(ch)) {
@@ -307,6 +310,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setText(s.substring(0, s.length() - 1));
             infixSb = new StringBuilder(tv.getText().toString());
             resultTv.setText("");
+        }
+        if(s.charAt(s.length() - 1) == ')') {
+            --rightNumber;
+        }
+        if(s.charAt(s.length() - 1) == '(') {
+            --leftNumber;
         }
     }
     public void clearAll() {
