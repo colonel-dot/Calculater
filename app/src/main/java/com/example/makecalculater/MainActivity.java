@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(tv.getText().toString().isEmpty()) {
             return;
         }
+
         if(isOperator(infixSb.charAt(infixSb.length() - 1))) {
             while(infixSb.length() > 0 && isOperator(infixSb.charAt(infixSb.length() - 1))) {
                 infixSb.deleteCharAt(infixSb.length() - 1);
