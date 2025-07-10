@@ -196,8 +196,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
         char lastChar = infixSb.charAt(infixSb.length() - 1);
-        if(isOperator(infixSb.charAt(infixSb.length() - 1))) {
-            while(infixSb.length() > 0 && isOperator(infixSb.charAt(infixSb.length() - 1))) {
+        if(isOperator(lastChar) || lastChar == '(') {
+            while(infixSb.length() > 0 && (isOperator(infixSb.charAt(infixSb.length() - 1)) || infixSb.charAt(infixSb.length() - 1) == '(')) {
                 infixSb.deleteCharAt(infixSb.length() - 1);
             }
         }
@@ -305,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tv.setText("");
             resultTv.setText("");
             infixSb = new StringBuilder();
+            return;
         }
         else {
             tv.setText(s.substring(0, s.length() - 1));

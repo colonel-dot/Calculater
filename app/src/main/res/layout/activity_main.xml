@@ -44,7 +44,7 @@
         android:layout_columnWeight="1"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape" />
+        android:background="@drawable/operater_btn_color"/>
 
     <Button
         android:id="@+id/btright"
@@ -57,7 +57,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"/>
+        android:background="@drawable/operater_btn_color"/>
     <Button
         android:id="@+id/btdiv"
         android:layout_width="0dp"
@@ -68,7 +68,7 @@
         android:layout_column="2"
         android:layout_columnWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         android:text="÷"
         android:textSize="30sp" />
 
@@ -82,7 +82,7 @@
         android:layout_column="3"
         android:layout_columnWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         android:text="×"
         android:textSize="30sp" />
 
@@ -98,7 +98,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         />
     <Button
         android:id="@+id/bt7"
@@ -111,7 +111,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         />
     <Button
         android:id="@+id/bt8"
@@ -124,7 +124,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
     <Button
@@ -138,7 +138,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         />
 
     <Button
@@ -150,7 +150,7 @@
         android:layout_column="3"
         android:layout_columnWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         android:text="-"
         android:textSize="30sp" />
 
@@ -166,7 +166,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         />
     <Button
         android:id="@+id/bt5"
@@ -179,7 +179,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
     <Button
@@ -194,7 +194,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
 
@@ -208,7 +208,7 @@
         android:layout_column="3"
         android:layout_columnWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         android:text="+"
         android:textSize="30sp" />
 
@@ -222,7 +222,7 @@
         android:layout_columnWeight="1"
         android:layout_height="0dp"
         android:layout_rowWeight="1"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         android:layout_margin="6dp"
         />
     <Button
@@ -236,7 +236,7 @@
         android:layout_columnWeight="1"
         android:layout_height="0dp"
         android:layout_rowWeight="1"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         android:layout_margin="6dp"/>
     <Button
         android:id="@+id/bt3"
@@ -250,7 +250,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
     <Button
@@ -264,7 +264,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_shape"
+        android:background="@drawable/operater_btn_color"
         />
     <Button
         android:id="@+id/btc"
@@ -278,7 +278,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
         />
     <Button
         android:id="@+id/bt0"
@@ -292,7 +292,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
     <Button
@@ -307,7 +307,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/my_shape"
+        android:background="@drawable/num_btn_color"
 
         />
 
