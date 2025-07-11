@@ -9,6 +9,8 @@
 
     <TextView
         android:id="@+id/tv"
+        android:scrollHorizontally="true"
+        android:ellipsize="none"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_row="0"
@@ -18,9 +20,24 @@
         android:layout_margin="6dp"
         android:layout_marginTop="30dp"
         android:textSize="50sp"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        android:singleLine="true"/>
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_row="0"
+        android:layout_column="3"
+        android:src="@drawable/ims"
+        android:scaleType="fitCenter"
+        android:layout_margin="6dp"
+        android:layout_gravity="end|top"
+    />
+
 
     <TextView
+        android:scrollHorizontally="true"
+        android:ellipsize="none"
         android:id="@+id/resultTv"
         android:layout_row="0"
         android:layout_rowWeight="1.5"
@@ -28,6 +45,7 @@
         android:layout_columnSpan="4"
         android:textSize="80sp"
         android:layout_gravity="right"
+        android:singleLine="true"
         />
 
 

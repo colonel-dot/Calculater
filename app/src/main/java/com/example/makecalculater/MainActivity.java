@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
         resultTv = findViewById(R.id.resultTv);
+        resultTv.setSelected(true); // 关键步骤
+        resultTv.requestFocus();
         Button bt0 = findViewById(R.id.bt0);
         bt0.setOnClickListener(this);
         Button bt1 = findViewById(R.id.bt1);
