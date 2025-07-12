@@ -5,6 +5,7 @@ import static java.lang.Double.parseDouble;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private static final String TAG = "MainActivity";
     StringBuilder infixSb = new StringBuilder();
     TextView tv;
     TextView resultTv;
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         infixSb.append(s);
     }
     public void calculateResult() {
-        if(tv.getText().toString().isEmpty()) {
+        if(tv.getText().toString().isEmpty() || tv.getText().toString().equals("-")) {
             return;
         }
         char lastChar = infixSb.charAt(infixSb.length() - 1);
@@ -207,12 +209,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String infix = infixSb.toString();
         StringBuilder postfixSb = new StringBuilder();
         int len = infix.length();
+        Log.d(TAG, "infix="+infix);
         for(int i = 0; i < len; ++i) {
             char ch = infix.charAt(i);
             if (Character.isDigit(ch) || ch == '.' || (ch == '-' && (i == 0 || (i > 0 &&(infix.charAt(i - 1) == '(') || isOperator(infix.charAt(i - 1)))))) {
                 if (ch == '-') {
                     postfixSb.append(ch); // 保留负号
-                    i++;
+                    if(i + 1 < len && infix.charAt(i + 1) == '(') {
+                        Log.d(TAG, "has continued");
+                        continue;
+                    }
+                    ++i;
                 }
                 while (i < infix.length() && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')) {
                     postfixSb.append(infix.charAt(i++));
@@ -229,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     postfixSb.append(c).append(" ");
                 }
                 infixStack.pop();
-
             }
             else if(isOperator(ch)){
                 while (!infixStack.isEmpty() && getPriority(infixStack.peek()) >= getPriority(ch)) {
@@ -243,12 +249,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         Deque<BigDecimal> calculateStack = new LinkedList<>();
         String[] tokens = postfixSb.toString().split("\\s+");
+        Log.d(TAG, "postfixSb=" + postfixSb.toString());
         for(String token : tokens) {
             if (token.matches("-?\\d+(\\.\\d+)?")) { // 数字
                 calculateStack.push(new BigDecimal(token));
             } else if (isOperator(token.charAt(0))) {
                 BigDecimal b = calculateStack.pop();
                 BigDecimal a = calculateStack.pop();
+                Log.d(TAG, "numa numb:" + b + a);
                 BigDecimal c = calculate(a, b, token.charAt(0));
                 if(c == null) {
                     return;
