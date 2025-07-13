@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         tv.append(s);
         infixSb.append(s);
+        if(infixSb.length() > 1 && infixSb.charAt(infixSb.length() - 2) == '-') {
+            infixSb.insert(infixSb.length() - 2, '0');
+        }
         ++leftNumber;
     }
 
@@ -210,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         StringBuilder postfixSb = new StringBuilder();
         int len = infix.length();
         Log.d(TAG, "infix="+infix);
+        boolean subLeftMeetRight = true;
         for(int i = 0; i < len; ++i) {
             char ch = infix.charAt(i);
             if (Character.isDigit(ch) || ch == '.' || (ch == '-' && (i == 0 || (i > 0 &&(infix.charAt(i - 1) == '(') || isOperator(infix.charAt(i - 1)))))) {
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     postfixSb.append(ch); // 保留负号
                     if(i + 1 < len && infix.charAt(i + 1) == '(') {
                         Log.d(TAG, "has continued");
+                        subLeftMeetRight = false;
                         continue;
                     }
                     ++i;
