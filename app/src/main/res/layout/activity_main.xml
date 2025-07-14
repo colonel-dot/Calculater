@@ -282,7 +282,7 @@
         android:layout_height="0dp"
         android:layout_rowWeight="1"
         android:layout_margin="6dp"
-        android:background="@drawable/operater_btn_color"
+        android:background="@drawable/equal_btn_color"
         />
     <Button
         android:id="@+id/btc"

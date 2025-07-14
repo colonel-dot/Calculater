@@ -88,10 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btLeft.setOnClickListener(this);
         Button btRight = findViewById(R.id.btright);
         btRight.setOnClickListener(this);
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setColor(Color.parseColor("#D2691E"));
-        gradientDrawable.setCornerRadius(15);
-        btequ.setBackground(gradientDrawable);
         btequ.setOnClickListener(this);
     }
 
@@ -198,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         infixSb.append(s);
     }
     public void calculateResult() {
+        int delNum;
         if(tv.getText().toString().isEmpty() || tv.getText().toString().equals("-")) {
             return;
         }
@@ -222,6 +219,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         continue;
                     }
                     ++i;
+                }
+                if(ch == '.' && !Character.isDigit(infix.charAt(i - 1))) {
+                    resultTv.setText("错误");
+                    return;
                 }
                 while (i < infix.length() && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')) {
                     postfixSb.append(infix.charAt(i++));
@@ -248,6 +249,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         while(!infixStack.isEmpty()) {
             postfixSb.append(infixStack.pop()).append(" ");
+        }
+        if(postfixSb.toString().isEmpty()) {
+            return;
         }
         Deque<BigDecimal> calculateStack = new LinkedList<>();
         String[] tokens = postfixSb.toString().split("\\s+");
