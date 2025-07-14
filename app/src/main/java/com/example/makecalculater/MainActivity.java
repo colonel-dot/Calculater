@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         infixSb.append(s);
     }
     public void calculateResult() {
-        int delNum;
+        int delNum = 0;
         if(tv.getText().toString().isEmpty() || tv.getText().toString().equals("-")) {
             return;
         }
@@ -225,15 +225,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
                 while (i < infix.length() && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')) {
-                    postfixSb.append(infix.charAt(i++));
+                    postfixSb.append(infix.charAt(i));
+                    if(infix.charAt(i) == '.') {
+                        if(delNum > 0) {
+                            Log.d(TAG, "小数点个数为" + delNum);
+                            resultTv.setText("错误");
+                            return;
+                        } else {
+                            ++delNum;
+                        }
+                    }
+                    ++i;
                 }
                 postfixSb.append(" ");
                 --i;
             }
             else if(ch == '(') {
                 infixStack.push('(');
+                delNum = 0;
             }
             else if(ch == ')') {
+                delNum = 0;
                 while(!infixStack.isEmpty() && infixStack.peek() != '(') {
                     char c = infixStack.pop();
                     postfixSb.append(c).append(" ");
@@ -241,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 infixStack.pop();
             }
             else if(isOperator(ch)){
+                delNum = 0;
                 while (!infixStack.isEmpty() && getPriority(infixStack.peek()) >= getPriority(ch)) {
                     postfixSb.append(infixStack.pop()).append(" ");
                 }
